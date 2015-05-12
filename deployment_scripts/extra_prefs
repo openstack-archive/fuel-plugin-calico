@@ -1,0 +1,31 @@
+Package: *
+Pin: origin binaries.projectcalico.org
+Pin-Priority: 1004
+
+Package: *
+Pin: origin ppa.launchpad.net
+Pin-Priority: 1003
+
+Package: python2.7*
+Pin: origin *ubuntu.com
+Pin-Priority: 1002
+
+Package: libpython2.7*
+Pin: origin *ubuntu.com
+Pin-Priority: 1002
+
+Package: libssl*
+Pin: origin *ubuntu.com
+Pin-Priority: 1002
+
+Package: *
+Pin: origin download.mirantis.com
+Pin-Priority: 1001
+
+Package: *
+Pin: origin *.mirantis.com
+Pin-Priority: 1001
+
+Package: *
+Pin: origin *ubuntu.com
+Pin-Priority: 1000
