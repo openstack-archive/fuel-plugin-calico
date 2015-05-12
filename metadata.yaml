@@ -1,0 +1,29 @@
+# Plugin name
+name: calico-fuel-plugin
+# Human-readable name for your plugin
+title: Use Calico Virtual Networking
+# Plugin version
+version: 1.0.0
+# Description
+description: Layer 3 Virtual Networking for Highly Scalable Data Centers
+# Required fuel version
+fuel_version: ['6.1']
+# Plugin authors
+authors: ['Emma Gordon']
+# Plugin license
+licenses: [Apache License Version 2.0]
+# Plugin project homepage
+homepage: https://github.com/stackforge/fuel-plugin-calico
+# Plugin group
+groups: ['network']
+
+# The plugin is compatible with releases in the list
+releases:
+  - os: ubuntu
+    version: 2014.2-6.1
+    mode: ['ha', 'multinode']
+    deployment_scripts_path: deployment_scripts/
+    repository_path: repositories/ubuntu
+
+# Version of plugin package
+package_version: '2.0.0'
