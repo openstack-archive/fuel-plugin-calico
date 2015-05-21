@@ -1,0 +1,8 @@
+Verified+2: Jenkins
+Code-Review+2: Neil Jerram <Neil.Jerram@metaswitch.com>
+Workflow+1: Neil Jerram <Neil.Jerram@metaswitch.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 21 May 2015 22:11:19 +0000
+Reviewed-on: https://review.openstack.org/182656
+Project: stackforge/fuel-plugin-calico
+Branch: refs/heads/master
