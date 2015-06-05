@@ -56,6 +56,7 @@ mv tmp /etc/init/etcd.conf
 cat << EXEC_CMD >> /etc/init/etcd.conf
 exec /usr/bin/etcd -proxy on                                                         \\
                    -listen-client-urls http://127.0.0.1:4001                         \\
+                   -advertise-client-urls http://127.0.0.1:7001                      \\
                    -initial-cluster controller=http://${controller_node_address}:2380
 EXEC_CMD
 service etcd start
