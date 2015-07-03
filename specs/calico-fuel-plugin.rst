@@ -1,3 +1,5 @@
+Copyright 2015 Metaswitch Networks
+
 Fuel Plugin for Project Calico
 ==============================
 

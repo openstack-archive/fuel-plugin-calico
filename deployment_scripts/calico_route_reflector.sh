@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 Metaswitch Networks
 
 exec > /tmp/calico_route_reflector.log 2>&1
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 Metaswitch Networks
 
 exec > /tmp/calico_compute.log 2>&1
 

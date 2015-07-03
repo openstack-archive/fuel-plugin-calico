@@ -1,3 +1,5 @@
+# Copyright 2015 Metaswitch Networks
+
 # Install/configure calico on the controller after cluster deployment
 # but before starting the BGP Route Reflector.
 - role: ['controller', 'primary-controller']
