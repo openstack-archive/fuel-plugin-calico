@@ -7,9 +7,9 @@ set -x
 
 echo "Hi, I'm a route_reflector node!"
 
-this_node_address=$(grep `hostname` /etc/hosts | awk '{print $1;}')
+this_node_address=$(python get_node_ip.py `hostname`)
 
-all_nodes=$(grep node- /etc/hosts | awk '{print $1;}')
+bgp_peers=$(python get_rr_peers.py)
 
 # Generate basic config for a BIRD BGP route reflector.
 cat > /etc/bird/bird.conf <<EOF
@@ -39,7 +39,7 @@ protocol device {
 EOF
 
 # Add a BGP protocol stanza for each compute node.
-for node in $all_nodes; do
+for node in $bgp_peers; do
     if [ $node != $this_node_address ]; then
         cat >> /etc/bird/bird.conf <<EOF
 
