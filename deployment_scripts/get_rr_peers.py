@@ -2,12 +2,11 @@
 # Copyright 2015 Metaswitch Networks
 
 import yaml
-from pluginutils import get_config_file_for_node_type
+
+from pluginutils import NODES_CONFIG
 
 def main():
-    config_file = get_config_file_for_node_type()
-
-    with open(config_file, "r") as f:
+    with open(NODES_CONFIG, "r") as f:
         config = yaml.safe_load(f)
 
     # The route reflector should only peer with compute nodes.
