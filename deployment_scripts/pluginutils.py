@@ -3,6 +3,15 @@
 
 import os
 
+# This config file is updated with the latest node details as the deployment
+# evolves. It only contains node details, not other config settings.
+NODES_CONFIG = "/etc/hiera/nodes.yaml"
+
+# These config files contain details of the nodes at initial deployment, but
+# they are not subsequently updated with node changes. However, they contain
+# a greater range of information, including settings and network config. They
+# are also created on the system earlier in the deployment process, so are
+# good sources of initial node information during Calico setup.
 PRIMARY_CONTROLLER_CFG = "/etc/primary-controller.yaml"
 CONTROLLER_CFG = "/etc/controller.yaml"
 COMPUTE_CFG = "/etc/compute.yaml"

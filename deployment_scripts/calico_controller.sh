@@ -181,4 +181,42 @@ iptables -I INPUT 1 -p tcp --dport 179 -j ACCEPT
 # controller is rebooted.
 iptables-save > /etc/iptables/rules.v4
 
+# Set up a service, calico-fuel-monitor, that will detect changes to the
+# deployment and reconfigure the calico components on the controller as
+# needed. For example, updating the route reflector configuration after
+# compute nodes are added/removed from the deployment.
+SERVICE_NAME=calico-fuel-monitor
+
+# Install the service's dependencies.
+apt-get -y install python-pip
+pip install pyinotify pyaml
+
+# During node deployment, the plugin deployment scripts are copied into 
+# /etc/fuel/plugins/<plugin_name>-<plugin_version> on the node, and this
+# script is run from that directory.
+SERVICE_DIR=$(pwd)
+sed "s@##REPLACE_ON_INSTALL##@${SERVICE_DIR}@" < $SERVICE_NAME > temp
+mv temp $SERVICE_NAME
+chmod +x $SERVICE_NAME
+
+cat << SERVICE_CFG >> /etc/init/calico-fuel-monitor.conf
+# calico-fuel-monitor - daemon to monitor for fuel deployment changes and
+#                       reconfigure the calico components accordingly
+
+description "Calico daemon to monitor fuel deployment changes"
+author "Emma Gordon <emma@projectcalico.org>"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+
+script
+cd ${SERVICE_DIR}
+exec ./${SERVICE_NAME}
+end script
+SERVICE_CFG
+
+service $SERVICE_NAME start
+
 exit 0
