@@ -3,6 +3,8 @@
 
 import os
 
+NODES_CONFIG = "/etc/hiera/nodes.yaml"
+
 PRIMARY_CONTROLLER_CFG = "/etc/primary-controller.yaml"
 CONTROLLER_CFG = "/etc/controller.yaml"
 COMPUTE_CFG = "/etc/compute.yaml"

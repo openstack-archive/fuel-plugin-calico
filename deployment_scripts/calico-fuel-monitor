@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import pyinotify
+import subprocess
+import yaml
+
+from pluginutils import NODES_CONFIG
+
+RECONFIGURE_ROUTE_REFLECTOR = \
+    "/opt/calico-fuel-monitor/bin/calico_route_reflector.sh"
+
+
+def _get_configured_compute_nodes():
+    with open(NODES_CONFIG, "r") as f:
+        config = yaml.safe_load(f)
+
+    compute_nodes = [node for node in config["nodes"]
+                     if node["role"] == "compute"]
+
+    return compute_nodes
+
+
+class DeploymentChangeHandler(pyinotify.ProcessEvent):
+    def __init__(self):
+        super(DeploymentChangeHandler, self).__init__()
+        self.compute_nodes = _get_configured_compute_nodes()
+
+    def process_IN_MODIFY(self, event):
+        current_compute_nodes = _get_configured_compute_nodes()
+        if current_compute_nodes != self.compute_nodes:
+            subprocess.call(RECONFIGURE_ROUTE_REFLECTOR)
+            self.compute_nodes = current_compute_nodes
+
+
+if __name__ == "__main__":
+    handler = DeploymentChangeHandler()
+    watch_manager = pyinotify.WatchManager()
+    notifier = pyinotify.Notifier(watch_manager, handler)
+    watch_manager.add_watch(NODES_CONFIG, pyinotify.IN_MODIFY)
+    notifier.loop()
+
