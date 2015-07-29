@@ -136,7 +136,7 @@ References
 
 * Project Calico wesbite - http://www.projectcalico.org/
 
-* Calico code on GitHub - https://github.com/Metaswitch/calico
+* Calico code on GitHub - https://github.com/projectcalico/calico
 
 * Calico Documentation - http://docs.projectcalico.org/en/latest/index.html
 
