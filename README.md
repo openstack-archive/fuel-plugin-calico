@@ -22,9 +22,14 @@ Compatible versions:
 
 	Mirantis Fuel 6.1
 
+To obtain the plugin:
+---------------------
 
-To build the plugin:
---------------------
+The Calico plugin can be downloaded from the [Fuel Plugin Catalog](
+https://www.mirantis.com/products/openstack-drivers-and-plugins/fuel-plugins/).
+
+Alternatively, to build the plugin:
+-----------------------------------
 
 - Install the fuel plugin builder, fpb:
 
