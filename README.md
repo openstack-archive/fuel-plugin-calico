@@ -39,7 +39,7 @@ Alternatively, to build the plugin:
 
 - Clone the calico plugin repository and run the plugin builder:
 
-		git clone https://github.com/stackforge/fuel-plugin-calico
+		git clone https://github.com/openstack/fuel-plugin-calico
 
 		cd fuel-plugin-calico/
 
