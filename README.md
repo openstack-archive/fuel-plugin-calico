@@ -43,6 +43,8 @@ Alternatively, to build the plugin:
 
 		cd fuel-plugin-calico/
 
+		git checkout 6.1
+
 		fpb --build .
 
 - Check that the file calico-fuel-plugin-1.0-1.0.0-0.noarch.rpm was created.
