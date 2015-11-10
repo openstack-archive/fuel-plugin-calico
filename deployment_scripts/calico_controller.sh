@@ -1,6 +1,8 @@
 #!/bin/bash
 # Copyright 2015 Metaswitch Networks
 
+export DEBIAN_FRONTEND=noninteractive
+
 exec > /tmp/calico_controller.log 2>&1
 
 set -x
@@ -18,28 +20,28 @@ curl -L http://binaries.projectcalico.org/repo/key | apt-key add -
 # in the file names causes problems as it contains full stops, and the file
 # contents aren't what we want).
 
-rm -f /etc/apt/preferences.d/calico-fuel-plugin-1.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-1.0.0.list
+rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.0.list
 
 cat > /etc/apt/sources.list.d/calico.list <<EOF
-deb http://binaries.projectcalico.org/fuel6.1 ./
+deb http://binaries.projectcalico.org/fuel7.0 ./
 EOF
 
 cat << PREFS >> /etc/apt/preferences.d/calico-fuel
 Package: *
 Pin: origin binaries.projectcalico.org
-Pin-Priority: 1100
+Pin-Priority: 1200
 PREFS
 
 # Add PPA for the etcd packages, and ensure that it has lower priority than
 # binaries.projectcalico.org so that we get the fuel versions of the calico
 # packages.
 
-apt-add-repository -y ppa:project-calico/juno
+apt-add-repository -y ppa:project-calico/kilo
 
 cat > /etc/apt/preferences.d/calico-etcd <<EOF
 Package: *
-Pin: origin ppa:project-calico/juno
-Pin-Priority: 1075
+Pin: release o=LP-PPA-project-calico-kilo
+Pin-Priority: 1175
 EOF
 
 # Pick up package details from new sources.

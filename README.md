@@ -1,3 +1,10 @@
+WARNING - UNDER DEVLOPMENT:
+===========================
+This is the development branch for the Calico plugin for the Fuel 7.0 release. 
+For a stable, working Calico plugin that has been certified by Mirantis to work 
+with the Fuel 6.1 release, you should see the 6.1 branch of this repository.
+
+
 Calico plugin for Mirantis Fuel
 ===============================
 
@@ -14,22 +21,15 @@ of your way!
 Limitations:
 ------------
 
-In the current release, Calico requires a deployment with a single OpenStack
-controller. This limitation will be lifted in future releases.
+None.
 
 Compatible versions:
 --------------------
 
-	Mirantis Fuel 6.1
+	Mirantis Fuel 7.0
 
-To obtain the plugin:
----------------------
-
-The Calico plugin can be downloaded from the [Fuel Plugin Catalog](
-https://www.mirantis.com/products/openstack-drivers-and-plugins/fuel-plugins/).
-
-Alternatively, to build the plugin:
------------------------------------
+To build the plugin:
+--------------------
 
 - Install the fuel plugin builder, fpb:
 
@@ -45,7 +45,7 @@ Alternatively, to build the plugin:
 
 		fpb --build .
 
-- Check that the file calico-fuel-plugin-1.0-1.0.0-0.noarch.rpm was created.
+- Check that the file calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm was created.
 
 
 To install the plugin:
@@ -55,13 +55,13 @@ To install the plugin:
 
 - Copy the plugin onto the fuel master node:
 
-		scp calico-fuel-plugin-1.0-1.0.0-0.noarch.rpm root@<Fuel_Master_Node_IP>:/tmp
+		scp calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm root@<Fuel_Master_Node_IP>:/tmp
 
 - Install the plugin on the fuel master node:
 
 		cd /tmp
 
-		fuel plugins --install calico-fuel-plugin-1.0-1.0.0-0.noarch.rpm
+		fuel plugins --install calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm
 
 - Check the plugin was installed:
 
@@ -76,7 +76,7 @@ OpenStack cluster in the usual way, with the following guidelines:
 
 - Create a new OpenStack environment, selecting:
 
-	Juno on Ubuntu Trusty
+	Kilo on Ubuntu Trusty
 
 	"Neutron with VLAN segmentation" as the networking setup
 
@@ -97,7 +97,6 @@ OpenStack cluster in the usual way, with the following guidelines:
 	- Floating IP range: 172.18.203.70 - 172.18.203.79
 
 - Add nodes (for meaningful testing, you will need at least two compute nodes
-  in addition to the controller). Note that, in this release of Calico, only
-  a single controller node is supported.
+  in addition to the controller).
 
 - Deploy changes

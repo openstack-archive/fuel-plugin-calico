@@ -6,7 +6,7 @@ Fuel Plugin for Project Calico
 The Calico plugin provides the ability to use Calico as a networking backend
 for Mirantis OpenStack.
 
-Compatible with Fuel version 6.1.
+Compatible with Fuel version 7.0.
 
 Problem description
 ===================
@@ -22,13 +22,15 @@ and destination workloads.
 Proposed change
 ===============
 
-Implement a Fuel plugin that will install and configure Calico networking in a
-Mirantis OpenStack deployment.
+Update the Calico plugin for Fuel version 6.1 to support version 7.0. This will 
+involve moving from the Juno to the Kilo release of Mirantis OpenStack.
+
+Support for HA deployments with multiple controllers will also be added.
 
 Alternatives
 ------------
 
-N/A - the aim is to implement a Fuel plugin.
+N/A
 
 Data model impact
 -----------------
@@ -43,7 +45,7 @@ None.
 Upgrade impact
 --------------
 
-When upgrading the Fuel Master node to Fuel Version higher than 6.1, plugin 
+When upgrading the Fuel Master node to Fuel Version higher than 7.0, plugin 
 compatibility should be checked, and a new plugin installed if necessary.
 
 Security impact
@@ -102,9 +104,9 @@ Other contributors:
 Work Items
 ----------
 
-* Integrate Calico with Fuel 6.1.
+* Integrate Calico with Fuel 7.0.
 
-* Implement the Calico plugin.
+* Update the Calico plugin.
 
 * Test Calico plugin.
 
@@ -113,7 +115,7 @@ Work Items
 Dependencies
 ============
 
-* Fuel 6.1.
+* Fuel 7.0.
 
 Testing
 =======
