@@ -8,8 +8,10 @@ set -x
 echo "Hi, I'm a route_reflector node!"
 
 this_node_address=$(python get_node_ip.py `hostname`)
+controller_node_addresses=$(python get_node_ips_by_role.py controller)
 
-bgp_peers=$(python get_rr_peers.py)
+client_peers=$(python get_node_ips_by_role.py compute)
+route_reflector_peers=("${controller_node_addresses[@]/$this_node_address}")
 
 # Generate basic config for a BIRD BGP route reflector.
 cat > /etc/bird/bird.conf <<EOF
@@ -38,24 +40,33 @@ protocol device {
 }
 EOF
 
-# Add a BGP protocol stanza for each compute node.
-for node in $bgp_peers; do
-    if [ $node != $this_node_address ]; then
-        cat >> /etc/bird/bird.conf <<EOF
-
+# Add a BGP protocol stanza for all peers.
+for node in ${client_peers[@]} ${route_reflector_peers[@]}; do
+  cat >> /etc/bird/bird.conf <<EOF
 protocol bgp {
-  description "$node";
   local as 64511;
   neighbor $node as 64511;
   multihop;
+EOF
+
+  if [[ "${client_peers[@]}" =~ "${node}" ]]; then
+    cat >> /etc/bird/bird.conf <<EOF
+  description "Client $node";
   rr client;
+EOF
+  else
+    cat >> /etc/bird/bird.conf <<EOF
+  description "Route Reflector $node";
+EOF
+  fi
+
+  cat >> /etc/bird/bird.conf <<EOF
+  rr cluster id 1.2.3.4;
   import all;
   export all;
   source address ${this_node_address};
 }
-
 EOF
-    fi
 done
 
 # Restart BIRD with the new config.
