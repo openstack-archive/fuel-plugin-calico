@@ -52,6 +52,11 @@ apt-get update
 
 apt-get -y install etcd
 
+for controller_address in ${controller_node_addresses[@]};do
+  initial_cluster+="${controller_address}=http://${controller_address}:2380,"
+done
+initial_cluster=${initial_cluster::-1} # remove trailing comma
+
 service etcd stop
 rm -rf /var/lib/etcd/*
 awk '/exec \/usr\/bin\/etcd/{while(getline && $0 != ""){}}1' /etc/init/etcd.conf > tmp
@@ -60,7 +65,7 @@ cat << EXEC_CMD >> /etc/init/etcd.conf
 exec /usr/bin/etcd -proxy on                                                         \\
                    -listen-client-urls http://127.0.0.1:4001                         \\
                    -advertise-client-urls http://127.0.0.1:7001                      \\
-                   -initial-cluster controller=http://${controller_node_addresses}:2380
+                   -initial-cluster ${initial_cluster}
 EXEC_CMD
 service etcd start
 
