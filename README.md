@@ -7,16 +7,26 @@ with the Fuel 6.1 release, you should see the 6.1 branch of this repository.
 
 Calico plugin for Mirantis Fuel
 ===============================
+Calico’s pure L3 approach to data center networking integrates seamlessly with
+Mirantis OpenStack to bring simple, scalable and secure networking to your
+deployment.
 
-Calico provides seamless, scalable, secure Layer 3 Virtual Networking for your
-Mirantis OpenStack Deployment.
+Based on the same scalable IP network principles as the Internet, Calico
+implements a highly efficient vRouter in each compute node that leverages the
+existing Linux kernel forwarding engine without the need for vSwitches. Each
+vRouter propagates workload reachability information (routes) to the rest of
+the data center using BGP – either directly in small scale deployments or
+via BGP route reflectors to reach Internet level scales in large deployments.
 
-By replacing OpenStack’s native networking model, Calico targets deployments 
-where the vast majority of workloads only require L3 connectivity, providing 
-efficient, easy to troubleshoot networking, without the complexity and 
-inefficiency of overlay networking models. Calico does not require any 
-additional nodes or Calico specific management – it just works, and gets out 
-of your way!
+Calico peers directly with the data center’s physical fabric (whether L2 or
+L3) without the need for on/off ramps, NAT, tunnels, or overlays.
+
+With Calico, networking issues are easy to troubleshoot. Since it's all IP,
+standard tools such as ping and traceroute will just work.
+
+Calico supports rich and flexible network policy which it enforces using
+bookended ACLs on each compute node to provide tenant isolation, security
+groups, and external reachability constraints.
 
 Limitations:
 ------------
