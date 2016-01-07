@@ -1,10 +1,3 @@
-WARNING - UNDER DEVLOPMENT:
-===========================
-This is the development branch for the Calico plugin for the Fuel 7.0 release. 
-For a stable, working Calico plugin that has been certified by Mirantis to work 
-with the Fuel 6.1 release, you should see the 6.1 branch of this repository.
-
-
 Calico plugin for Mirantis Fuel
 ===============================
 Calico’s pure L3 approach to data center networking integrates seamlessly with
