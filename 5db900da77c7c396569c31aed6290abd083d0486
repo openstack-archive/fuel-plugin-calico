@@ -1,0 +1,9 @@
+Verified+1: Plugins CI <plugins.ci@mirantis.com>
+Code-Review+2: Neil Jerram <Neil.Jerram@metaswitch.com>
+Workflow+1: Neil Jerram <Neil.Jerram@metaswitch.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 11 Jan 2016 16:48:58 +0000
+Reviewed-on: https://review.openstack.org/264740
+Project: openstack/fuel-plugin-calico
+Branch: refs/heads/master
