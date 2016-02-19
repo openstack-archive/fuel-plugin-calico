@@ -60,7 +60,7 @@ initial_cluster=${initial_cluster::-1} # remove trailing comma
 
 service etcd stop
 rm -rf /var/lib/etcd/*
-awk '/exec \/usr\/bin\/etcd/{while(getline && $0 != ""){}}1' /etc/init/etcd.conf > tmp
+awk 'BEGIN{p=1}/exec \/usr\/bin\/etcd/{p=0}/^\s*$/{p=1}p' /etc/init/etcd.conf > tmp
 mv tmp /etc/init/etcd.conf
 cat << EXEC_CMD >> /etc/init/etcd.conf
 exec /usr/bin/etcd -proxy on                                                         \\
@@ -72,7 +72,7 @@ service etcd start
 
 # Run apt-get upgrade and apt-get dist-upgrade. These commands will
 # bring in Calico-specific updates to the OpenStack packages and to
-# dnsmasq. 
+# dnsmasq.
 
 apt-get -y upgrade
 apt-get -y dist-upgrade
@@ -101,8 +101,8 @@ sed -i "/^\[DEFAULT\]/a\
 interface_driver = neutron.agent.linux.interface.RoutedInterfaceDriver
 " /etc/neutron/dhcp_agent.ini
 
-# Allow BGP connections through the Fuel firewall. We do this before 
-# installing calico-compute, so that they will be included when the 
+# Allow BGP connections through the Fuel firewall. We do this before
+# installing calico-compute, so that they will be included when the
 # calico-compute install script does iptables-save.
 iptables -I INPUT 1 -p tcp --dport 179 -j ACCEPT
 
@@ -137,7 +137,7 @@ apt-get -y install calico-compute bird
 # a route reflector to avoid the need for a full BGP mesh. To this
 # end, it includes useful configuration scripts that will prepare a
 # BIRD config file with a single peering to the route reflector. If
-# that's correct for your network, you can run the following command 
+# that's correct for your network, you can run the following command
 # for IPv4 connectivity between compute hosts.
 #
 # The calico_route_reflector.sh script will set up the required BGP

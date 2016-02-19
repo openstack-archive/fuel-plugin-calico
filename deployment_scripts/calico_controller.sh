@@ -60,7 +60,7 @@ initial_cluster=${initial_cluster::-1} # remove trailing comma
 
 service etcd stop
 rm -rf /var/lib/etcd/*
-awk '/exec \/usr\/bin\/etcd/{while(getline && $0 != ""){}}1' /etc/init/etcd.conf > tmp
+awk 'BEGIN{p=1}/exec \/usr\/bin\/etcd/{p=0}/^\s*$/{p=1}p' /etc/init/etcd.conf > tmp
 mv tmp /etc/init/etcd.conf
 cat << EXEC_CMD >> /etc/init/etcd.conf
 exec /usr/bin/etcd -name ${this_node_address}                                                                 \\
@@ -201,7 +201,7 @@ SERVICE_NAME=calico-fuel-monitor
 apt-get -y install python-pip
 pip install pyinotify pyaml
 
-# During node deployment, the plugin deployment scripts are copied into 
+# During node deployment, the plugin deployment scripts are copied into
 # /etc/fuel/plugins/<plugin_name>-<plugin_version> on the node, and this
 # script is run from that directory.
 SERVICE_DIR=$(pwd)

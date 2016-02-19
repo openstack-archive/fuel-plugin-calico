@@ -13,7 +13,7 @@ initial_cluster=${initial_cluster::-1} # remove trailing comma
 
 service etcd stop
 rm -rf /var/lib/etcd/*
-awk '/exec \/usr\/bin\/etcd/{while(getline && $0 != ""){}}1' /etc/init/etcd.conf > tmp
+awk 'BEGIN{p=1}/exec \/usr\/bin\/etcd/{p=0}/^\s*$/{p=1}p' /etc/init/etcd.conf > tmp
 mv tmp /etc/init/etcd.conf
 cat << EXEC_CMD >> /etc/init/etcd.conf
 exec /usr/bin/etcd -name ${this_node_address}                                                                 \\
@@ -39,4 +39,3 @@ while [[ $retry_count < 5 ]]; do
     sleep 2
   fi
 done
-
