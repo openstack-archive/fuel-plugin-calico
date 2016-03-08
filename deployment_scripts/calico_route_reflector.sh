@@ -10,7 +10,7 @@ echo "Hi, I'm a route_reflector node!"
 
 # Calculate IP addresses of route reflector peers.
 this_node_address=$(python get_node_ip.py `hostname`)
-controller_node_addresses=$(python get_node_ips_by_role.py controller)
+controller_node_addresses=$(python get_controller_ips.py)
 route_reflector_peers=("${controller_node_addresses[@]/$this_node_address}")
 
 # Get compute host names from etcd.
