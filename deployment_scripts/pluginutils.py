@@ -5,7 +5,8 @@ import os
 
 # This config file is updated with the latest node details as the deployment
 # evolves. It only contains node details, not other config settings.
-NODES_CONFIG = "/etc/hiera/astute.yaml"
+ASTUTE_CONFIG = "/etc/hiera/astute.yaml"
+NODES_CONFIG = "/etc/hiera/nodes.yaml"
 
 # These config files contain details of the nodes at initial deployment, but
 # they are not subsequently updated with node changes. However, they contain

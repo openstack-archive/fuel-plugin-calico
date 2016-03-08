@@ -4,6 +4,7 @@ import pyinotify
 import subprocess
 import yaml
 
+from pluginutils import ASTUTE_CONFIG
 from pluginutils import NODES_CONFIG
 
 SCRIPTS_LOCATION="##REPLACE_ON_INSTALL##/"
@@ -12,7 +13,7 @@ UPDATE_ETCD_CLUSTER = SCRIPTS_LOCATION + "update_etcd_cluster.sh"
 
 
 def _get_configured_nodes(roles):
-    with open(NODES_CONFIG, "r") as f:
+    with open(ASTUTE_CONFIG, "r") as f:
         config = yaml.safe_load(f)
 
     return [node for node in config["nodes"] if node["role"] in roles]
@@ -52,5 +53,6 @@ if __name__ == "__main__":
     handler = DeploymentChangeHandler()
     watch_manager = pyinotify.WatchManager()
     notifier = pyinotify.Notifier(watch_manager, handler)
+    watch_manager.add_watch(ASTUTE_CONFIG, pyinotify.IN_MODIFY)
     watch_manager.add_watch(NODES_CONFIG, pyinotify.IN_MODIFY)
     notifier.loop()
