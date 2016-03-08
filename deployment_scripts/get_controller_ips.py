@@ -3,11 +3,11 @@
 
 import yaml
 
-from pluginutils import NODES_CONFIG
+from pluginutils import ASTUTE_CONFIG
 
 
 def main(node_roles):
-    with open(NODES_CONFIG, "r") as f:
+    with open(ASTUTE_CONFIG, "r") as f:
         config = yaml.safe_load(f)
 
     node_ips = [node["internal_address"] for node in config["nodes"]
