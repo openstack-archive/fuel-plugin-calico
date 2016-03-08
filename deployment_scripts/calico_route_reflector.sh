@@ -1,17 +1,27 @@
 #!/bin/bash
-# Copyright 2015 Metaswitch Networks
+# Copyright 2015-2016 Metaswitch Networks
 
-exec > /tmp/calico_route_reflector.log 2>&1
+exec >> /tmp/calico_route_reflector.log 2>&1
 
 set -x
 
+echo "================ `date` ================"
 echo "Hi, I'm a route_reflector node!"
 
+# Calculate IP addresses of route reflector peers.
 this_node_address=$(python get_node_ip.py `hostname`)
 controller_node_addresses=$(python get_node_ips_by_role.py controller)
-
-client_peers=$(python get_node_ips_by_role.py compute)
 route_reflector_peers=("${controller_node_addresses[@]/$this_node_address}")
+
+# Get compute host names from etcd.
+compute_hosts=$(etcdctl ls /calico/felix/v1/host | xargs -n1 basename)
+
+# Use /etc/hosts to convert each compute host name to an IP address.
+client_peers=
+for compute in $compute_hosts; do
+    compute=$(awk "/$compute/{print \$1;}" /etc/hosts)
+    client_peers="$client_peers $compute"
+done
 
 # Generate basic config for a BIRD BGP route reflector.
 cat > /etc/bird/bird.conf <<EOF
