@@ -18,10 +18,6 @@ def _get_configured_nodes(roles):
     return [node for node in config["nodes"] if node["role"] in roles]
 
 
-def _get_compute_nodes():
-    return _get_configured_nodes(["compute"])
-
-
 def _get_control_nodes():
     nodes = _get_configured_nodes(["controller", "primary-controller"])
 
@@ -39,21 +35,16 @@ def _get_control_nodes():
 class DeploymentChangeHandler(pyinotify.ProcessEvent):
     def __init__(self):
         super(DeploymentChangeHandler, self).__init__()
-        self.compute_nodes = _get_compute_nodes()
         self.control_nodes = _get_control_nodes()
 
     def process_IN_MODIFY(self, event):
-        current_compute_nodes = _get_compute_nodes()
         current_control_nodes = _get_control_nodes()
 
+        subprocess.call(RECONFIGURE_ROUTE_REFLECTOR)
+
         if current_control_nodes != self.control_nodes:
-            subprocess.call(RECONFIGURE_ROUTE_REFLECTOR)
             subprocess.call(UPDATE_ETCD_CLUSTER)
 
-        elif current_compute_nodes != self.compute_nodes:
-            subprocess.call(RECONFIGURE_ROUTE_REFLECTOR)
-
-        self.compute_nodes = current_compute_nodes
         self.control_nodes = current_control_nodes
 
 
@@ -63,4 +54,3 @@ if __name__ == "__main__":
     notifier = pyinotify.Notifier(watch_manager, handler)
     watch_manager.add_watch(NODES_CONFIG, pyinotify.IN_MODIFY)
     notifier.loop()
-
