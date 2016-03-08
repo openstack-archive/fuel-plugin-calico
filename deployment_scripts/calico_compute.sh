@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015 Metaswitch Networks
+# Copyright 2015-2016 Metaswitch Networks
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -10,7 +10,7 @@ set -x
 echo "Hi, I'm a compute node!"
 
 this_node_address=$(python get_node_ip.py `hostname`)
-controller_node_addresses=$(python get_node_ips_by_role.py controller)
+controller_node_addresses=$(python get_controller_ips.py)
 
 # Get APT key for binaries.projectcalico.org.
 
