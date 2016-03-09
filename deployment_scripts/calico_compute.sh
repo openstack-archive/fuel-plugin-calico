@@ -21,7 +21,7 @@ curl -L http://binaries.projectcalico.org/repo/key | apt-key add -
 # in the file names causes problems as it contains full stops, and the file
 # contents aren't what we want).
 
-rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.0.list
+rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.list
 
 cat > /etc/apt/sources.list.d/calico.list <<EOF
 deb http://binaries.projectcalico.org/fuel7.0 ./
