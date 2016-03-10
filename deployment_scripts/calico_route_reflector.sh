@@ -13,14 +13,12 @@ this_node_address=$(python get_node_ip.py `hostname`)
 controller_node_addresses=$(python get_controller_ips.py)
 route_reflector_peers=("${controller_node_addresses[@]/$this_node_address}")
 
-# Get compute host names from etcd.
-compute_hosts=$(etcdctl ls /calico/felix/v1/host | xargs -n1 basename)
+# Use /etc/hosts to get IP addresses of all other Fuel nodes.
+client_peers=`awk 'NF==3 {print $1;}' /etc/hosts | sort | uniq`
 
-# Use /etc/hosts to convert each compute host name to an IP address.
-client_peers=
-for compute in $compute_hosts; do
-    compute=$(awk "/$compute/{print \$1;}" /etc/hosts)
-    client_peers="$client_peers $compute"
+# Remove the controller IPs from that set.
+for controller_ip in $controller_node_addresses; do
+  client_peers=${client_peers/$controller_ip}
 done
 
 # Generate basic config for a BIRD BGP route reflector.

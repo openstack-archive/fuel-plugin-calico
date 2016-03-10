@@ -5,7 +5,6 @@ import subprocess
 import yaml
 
 from pluginutils import ASTUTE_CONFIG
-from pluginutils import NODES_CONFIG
 
 SCRIPTS_LOCATION="##REPLACE_ON_INSTALL##/"
 RECONFIGURE_ROUTE_REFLECTOR = SCRIPTS_LOCATION + "calico_route_reflector.sh"
@@ -53,6 +52,5 @@ if __name__ == "__main__":
     handler = DeploymentChangeHandler()
     watch_manager = pyinotify.WatchManager()
     notifier = pyinotify.Notifier(watch_manager, handler)
-    watch_manager.add_watch(ASTUTE_CONFIG, pyinotify.IN_MODIFY)
-    watch_manager.add_watch(NODES_CONFIG, pyinotify.IN_MODIFY)
+    watch_manager.add_watch('/etc/hosts', pyinotify.IN_MODIFY)
     notifier.loop()
