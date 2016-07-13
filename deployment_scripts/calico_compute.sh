@@ -23,9 +23,15 @@ curl -L http://binaries.projectcalico.org/repo/key | apt-key add -
 
 rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.0.list
 
-cat > /etc/apt/sources.list.d/calico.list <<EOF
-deb http://binaries.projectcalico.org/fuel7.0 ./
-EOF
+# Install some extra packages with proper deps
+rm -f /etc/apt/sources.list.d/calico.list
+apt-get update
+apt-get -y install nova-api
+
+## DISABLED
+#cat > /etc/apt/sources.list.d/calico.list <<EOF
+#deb http://binaries.projectcalico.org/fuel7.0 ./
+#EOF
 
 cat << PREFS >> /etc/apt/preferences.d/calico-fuel
 Package: *
@@ -37,11 +43,11 @@ PREFS
 # binaries.projectcalico.org so that we get the fuel versions of the calico
 # packages.
 
-apt-add-repository -y ppa:project-calico/kilo
+apt-add-repository -y ppa:project-calico/calico-1.4
 
 cat > /etc/apt/preferences.d/calico-etcd <<EOF
 Package: *
-Pin: release o=LP-PPA-project-calico-kilo
+Pin: release o=LP-PPA-project-calico-calico-1_4
 Pin-Priority: 1175
 EOF
 
@@ -67,6 +73,7 @@ exec /usr/bin/etcd -proxy on                                                    
                    -listen-client-urls http://127.0.0.1:4001                         \\
                    -advertise-client-urls http://127.0.0.1:7001                      \\
                    -initial-cluster ${initial_cluster}
+
 EXEC_CMD
 service etcd start
 
@@ -74,8 +81,8 @@ service etcd start
 # bring in Calico-specific updates to the OpenStack packages and to
 # dnsmasq. 
 
-apt-get -y upgrade
-apt-get -y dist-upgrade
+apt-get -y --force-yes upgrade
+apt-get -y --force-yes dist-upgrade
 
 # Open /etc/nova/nova.conf and remove the linuxnet_interface_driver line.
 
@@ -84,22 +91,8 @@ cp /etc/nova/nova.conf /etc/nova/nova.conf.pre-calico
 sed -i "/^linuxnet_interface_driver/d" /etc/nova/nova.conf
 service nova-compute restart
 
-# Install some extra packages.
-
-apt-get -y install neutron-common neutron-dhcp-agent nova-api
-
-# Open /etc/neutron/dhcp_agent.ini in your preferred text editor. In
-# the [DEFAULT] section, add the following line:
-#
-# interface_driver = neutron.agent.linux.interface.RoutedInterfaceDriver
-
-cp /etc/neutron/dhcp_agent.ini /etc/neutron/dhcp_agent.ini.pre-calico
-
-sed -i "/^interface_driver/d" /etc/neutron/dhcp_agent.ini
-
-sed -i "/^\[DEFAULT\]/a\
-interface_driver = neutron.agent.linux.interface.RoutedInterfaceDriver
-" /etc/neutron/dhcp_agent.ini
+# Install calico-dhcp-agent
+apt-get -y install calico-dhcp-agent
 
 # Allow BGP connections through the Fuel firewall. We do this before 
 # installing calico-compute, so that they will be included when the 

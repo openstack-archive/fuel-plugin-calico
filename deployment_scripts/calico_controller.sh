@@ -23,9 +23,10 @@ curl -L http://binaries.projectcalico.org/repo/key | apt-key add -
 
 rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.0.list
 
-cat > /etc/apt/sources.list.d/calico.list <<EOF
-deb http://binaries.projectcalico.org/fuel7.0 ./
-EOF
+# DISABLED
+#cat > /etc/apt/sources.list.d/calico.list <<EOF
+#deb http://binaries.projectcalico.org/fuel7.0 ./
+#EOF
 
 cat << PREFS >> /etc/apt/preferences.d/calico-fuel
 Package: *
@@ -37,11 +38,11 @@ PREFS
 # binaries.projectcalico.org so that we get the fuel versions of the calico
 # packages.
 
-apt-add-repository -y ppa:project-calico/kilo
+apt-add-repository -y ppa:project-calico/calico-1.4
 
 cat > /etc/apt/preferences.d/calico-etcd <<EOF
 Package: *
-Pin: release o=LP-PPA-project-calico-kilo
+Pin: release o=LP-PPA-project-calico-calico-1_4
 Pin-Priority: 1175
 EOF
 
