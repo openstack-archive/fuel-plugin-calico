@@ -12,9 +12,9 @@ NODES_CONFIG = "/etc/hiera/astute.yaml"
 # a greater range of information, including settings and network config. They
 # are also created on the system earlier in the deployment process, so are
 # good sources of initial node information during Calico setup.
-PRIMARY_CONTROLLER_CFG = "/etc/primary-controller.yaml"
-CONTROLLER_CFG = "/etc/controller.yaml"
-COMPUTE_CFG = "/etc/compute.yaml"
+PRIMARY_CONTROLLER_CFG = NODES_CONFIG
+CONTROLLER_CFG = NODES_CONFIG
+COMPUTE_CFG = NODES_CONFIG
 
 def get_config_file_for_node_type():
     if os.path.isfile(PRIMARY_CONTROLLER_CFG):

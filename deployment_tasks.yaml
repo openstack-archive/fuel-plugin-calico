@@ -2,15 +2,19 @@
 
 # Install/configure calico on the controller after cluster deployment
 # but before starting the BGP Route Reflector.
-- role: ['controller', 'primary-controller']
-  stage: post_deployment/50
+- id: calico-controller
+  role: ['controller', 'primary-controller']
+  version: 2.0.0
+  requires: [post_deployment_start]
   type: shell
   parameters:
     cmd: ./calico_controller.sh
     timeout: 600
 
-- role: ['controller', 'primary-controller']
-  stage: post_deployment/100
+- id: calico-route-reflector
+  role: ['controller', 'primary-controller']
+  version: 2.0.0
+  requires: [post_deployment_start, calico-controller]
   type: shell
   parameters:
     cmd: ./calico_route_reflector.sh
@@ -25,8 +29,10 @@
 #    timeout: 60
 
 # Install/configure calico on the compute nodes after cluster deployment.
-- role: ['compute']
-  stage: post_deployment
+- id: calico-compute
+  role: ['compute']
+  version: 2.0.0
+  requires: [post_deployment_start]
   type: shell
   parameters:
     cmd: ./calico_compute.sh
