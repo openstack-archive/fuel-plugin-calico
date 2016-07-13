@@ -23,6 +23,11 @@ curl -L http://binaries.projectcalico.org/repo/key | apt-key add -
 
 rm -f /etc/apt/preferences.d/calico-fuel-plugin-2.0.0 /etc/apt/sources.list.d/calico-fuel-plugin-2.0.0.list
 
+# Install actual neutron-dhcp-agent with proper deps
+rm -f /etc/apt/sources.list.d/calico.list
+apt-get update
+apt-get install -y neutron-dhcp-agent
+
 cat > /etc/apt/sources.list.d/calico.list <<EOF
 deb http://binaries.projectcalico.org/fuel7.0 ./
 EOF
@@ -67,6 +72,7 @@ exec /usr/bin/etcd -proxy on                                                    
                    -listen-client-urls http://127.0.0.1:4001                         \\
                    -advertise-client-urls http://127.0.0.1:7001                      \\
                    -initial-cluster ${initial_cluster}
+
 EXEC_CMD
 service etcd start
 
@@ -74,8 +80,8 @@ service etcd start
 # bring in Calico-specific updates to the OpenStack packages and to
 # dnsmasq. 
 
-apt-get -y upgrade
-apt-get -y dist-upgrade
+apt-get -y --force-yes upgrade
+apt-get -y --force-yes dist-upgrade
 
 # Open /etc/nova/nova.conf and remove the linuxnet_interface_driver line.
 
