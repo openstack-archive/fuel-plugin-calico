@@ -1,0 +1,20 @@
+calico-rr:
+  name: Calico - RR
+  description: Calico route-reflector role
+  has_primary: false
+  limits:
+    min: 1
+    recommended: 2
+  public_ip_required: false
+  weight: 100
+  conflicts:
+    - compute
+calico-etcd:
+  name: Calico - etcd
+  description: Calico etcd instance.
+  has_primary: false
+  limits:
+    min: 1
+    recommended: 2
+  public_ip_required: false
+  weight: 100

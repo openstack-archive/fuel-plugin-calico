@@ -1,0 +1,340 @@
+# Groups
+
+- id: calico-rrs
+  type: group
+  version: 2.1.0
+  role:
+    - calico-rr
+  tasks: [hiera, globals, setup_repositories, tools, logging, netconfig, hosts, deploy_start]
+  requires:
+    - deploy_start
+  required_for:
+    - deploy_end
+  parameters:
+    strategy:
+      type: one_by_one
+
+- id: calico-etcds
+  type: group
+  version: 2.1.0
+  role:
+    - calico-etcd
+  tasks: [hiera, globals, setup_repositories, tools, logging, netconfig, hosts, deploy_start]
+  requires:
+    - deploy_start
+  required_for:
+    - deploy_end
+  parameters:
+    strategy:
+      type: one_by_one
+
+# Plugin tasks
+
+- id: hiera_override
+  type: puppet
+  version: 2.1.0
+  groups: ["/.*/"]
+  requires:
+    - hiera
+  required_for:
+    - globals
+  parameters:
+    puppet_manifest: puppet/manifests/hiera_override.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3600
+
+- id: calico-private-gateway-check
+  groups: ["/.*/"]
+  version: 2.1.0
+  requires:
+    - globals
+  required_for:
+    - deploy_end
+    - netconfig
+    - hosts
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/private_gateway_check.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: calico-repo-setup
+  role:
+    - calico-rr
+    - calico-etcd
+    - primary-controller
+    - controller
+    - compute
+  version: 2.1.0
+  requires:
+    - netconfig
+    - hosts
+  required_for:
+    - deploy_end
+    - openstack-network-start
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/repo_setup.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: calico-rr
+  role:
+    - calico-rr
+  version: 2.1.0
+  requires:
+    - netconfig
+    - hosts
+    - firewall
+    - calico-repo-setup
+  required_for:
+    - deploy_end
+    - openstack-network-start
+  condition:
+    yaql_exp: >
+      changedAny($.configuration, $.debug, $.network_metadata, $.network_scheme, $['fuel-plugin-calico'])
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/role_rr.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: calico-etcd
+  role:
+    - calico-etcd
+  version: 2.1.0
+  requires:
+    - netconfig
+    - hosts
+    - firewall
+    - calico-repo-setup
+  required_for:
+    - deploy_end
+    - openstack-network-start
+  condition:
+    yaql_exp: >
+      changedAny($.configuration, $.debug, $.network_metadata, $.network_scheme, $['fuel-plugin-calico'])
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/role_etcd.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: calico-etcd-proxy
+  role:
+    - primary-controller
+    - controller
+    - compute
+  version: 2.1.0
+  requires:
+    - netconfig
+    - hosts
+    - firewall
+    - calico-repo-setup
+  required_for:
+    - deploy_end
+    - openstack-network-start
+  cross-depends:
+    - name: primary-calico-etcd
+      role: ["/(primary-)?calico-etcd/"]
+    - name: calico-etcd
+      role: ["/(primary-)?calico-etcd/"]
+  condition:
+    yaql_exp: not ('calico-etcd' in $.roles)
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/etcd_proxy.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: openstack-network-server-config
+  type: puppet
+  version: 2.1.0
+  groups:
+    - primary-controller
+    - controller
+  requires:
+    - calico-repo-setup
+    - calico-etcd-proxy
+    - openstack-network-start
+    - openstack-network-common-config
+  required_for:
+    - openstack-network-end
+  cross-depends:
+    - name: /(primary-)?calico-rr/
+      role: ["/(primary-)?calico-rr/"]
+    - name: /(primary-)?calico-etcd/
+      role: ["/(primary-)?calico-etcd/"]
+  condition:
+    yaql_exp: >
+      changedAny($.quantum, $.configuration, $.quantum_settings,
+      $.get('database_vip'), $.network_metadata.vips, $.nova,
+      $.get('neutron_primary_controller_roles'),
+      $.get('neutron_compute_nodes'), $.get('region', 'RegionOne'),
+      $.get('use_ssl'), $.neutron_advanced_configuration, $.network_scheme)
+  refresh_on:
+    - neutron_plugin_ml2
+    - neutron_config
+    - neutron_api_config
+  parameters:
+    puppet_manifest: puppet/manifests/neutron_server_config.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: openstack-network-networks
+  type: puppet
+  version: 2.1.0
+  groups:
+    - primary-controller
+  requires:
+    - openstack-network-start
+    - openstack-network-common-config
+    - openstack-network-server-config
+  required_for:
+    - openstack-network-end
+  condition:
+    yaql_exp: "changedAny($.access, $.quantum_settings, $.quantum)"
+  parameters:
+    puppet_manifest: puppet/manifests/neutron_networks.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: calico-compute-bird
+  role:
+    - compute
+  version: 2.1.0
+  requires:
+    - netconfig
+    - hosts
+    - firewall
+    - calico-repo-setup
+  required_for:
+    - deploy_end
+    - openstack-network-start
+  cross-depends:
+    - name: /(primary-)?calico-rr/
+      role: ["/(primary-)?calico-rr/"]
+  condition:
+    yaql_exp: >
+      changedAny($.configuration, $.debug, $.network_metadata, $.network_scheme, $['fuel-plugin-calico'])
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: puppet/manifests/compute_bird.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+- id: openstack-network-compute-nova
+  type: puppet
+  version: 2.1.0
+  groups: [compute]
+  requires: [openstack-network-start, calico-etcd-proxy]
+  required_for: [openstack-network-end]
+  condition:
+    yaql_exp: >
+      changedAny($.network_scheme, $.quantum, $.quantum_settings, $.nova,
+      $.network_metadata.vips, $.get('region'), $.get('use_ssl'), $['fuel-plugin-calico'])
+  parameters:
+    puppet_manifest: puppet/manifests/compute_neutron_nova.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: calico-compute-metadata-api
+  type: puppet
+  version: 2.1.0
+  groups: [compute]
+  requires: [openstack-network-end, calico-etcd-proxy, top-role-compute]
+  required_for: [enable_nova_compute_service]
+  condition:
+    yaql_exp: >
+      changedAny($.quantum, $.configuration, $.debug,
+      $.neutron_advanced_configuration, $['fuel-plugin-calico'])
+  parameters:
+    puppet_manifest: puppet/manifests/compute_metadata_api.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: calico-compute-alt-gateway
+  type: puppet
+  version: 2.1.0
+  groups: [compute]
+  requires: [openstack-network-end, calico-etcd-proxy, top-role-compute]
+  required_for: [enable_nova_compute_service, calico-compute-felix]
+  condition:
+    yaql_exp: >
+      changedAny($.quantum, $.configuration,
+      $.neutron_advanced_configuration, $['fuel-plugin-calico'])
+  parameters:
+    puppet_manifest: puppet/manifests/compute_alt_gateway.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: calico-compute-felix
+  type: puppet
+  version: 2.1.0
+  groups: [compute]
+  requires: [openstack-network-end, calico-etcd-proxy, top-role-compute]
+  required_for: [enable_nova_compute_service]
+  condition:
+    yaql_exp: >
+      changedAny($.quantum, $.configuration, $.debug,
+      $.neutron_advanced_configuration, $['fuel-plugin-calico'])
+  parameters:
+    puppet_manifest: puppet/manifests/compute_felix.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+- id: openstack-network-agents-dhcp
+  type: puppet
+  version: 2.1.0
+  groups: [compute]
+  requires: [openstack-network-end, calico-etcd-proxy, calico-compute-felix, top-role-compute]
+  required_for: [enable_nova_compute_service]
+  condition:
+    yaql_exp: >
+      changedAny($.quantum, $.configuration, $.debug,
+      $.neutron_advanced_configuration, $['fuel-plugin-calico'])
+  refresh_on: [neutron_dhcp_agent_config]
+  parameters:
+    puppet_manifest: puppet/manifests/compute_dhcp_agent.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 1800
+
+# Disable Neutron tasks, not required for Calice setup
+
+- id: openstack-network-routers
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+
+- id: primary-openstack-network-agents-dhcp
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+# Task with id:openstack-network-agents-dhcp was be re-definet above
+
+- id: primary-openstack-network-plugins-l2
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+- id: openstack-network-plugins-l2
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+
+- id: primary-openstack-network-agents-l3
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+- id: openstack-network-agents-l3
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+
+- id: primary-openstack-network-agents-metadata
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped
+- id: openstack-network-agents-metadata
+  groups: ["/.*/"]
+  version: 2.1.0
+  type: skipped

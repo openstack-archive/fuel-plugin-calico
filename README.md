@@ -31,7 +31,7 @@ None.
 Compatible versions:
 --------------------
 
-	Mirantis Fuel 7.0
+	Mirantis Fuel 9.0
 
 To build the plugin:
 --------------------
@@ -39,18 +39,15 @@ To build the plugin:
 - Install the fuel plugin builder, fpb:
 
 		easy_install pip
-
 		pip install fuel-plugin-builder
 
 - Clone the calico plugin repository and run the plugin builder:
 
 		git clone https://github.com/openstack/fuel-plugin-calico
-
 		cd fuel-plugin-calico/
-
 		fpb --build .
 
-- Check that the file calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm was created.
+- Check that the file fuel-plugin-calico-VERSION.noarch.rpm was created.
 
 
 To install the plugin:
@@ -60,13 +57,16 @@ To install the plugin:
 
 - Copy the plugin onto the fuel master node:
 
-		scp calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm root@<Fuel_Master_Node_IP>:/tmp
+		scp fuel-plugin-calico-VERSION.noarch.rpm root@<Fuel_Master_Node_IP>:/tmp
+
+- Install the `patch` utility:
+
+        yum install -y patch
 
 - Install the plugin on the fuel master node:
 
 		cd /tmp
-
-		fuel plugins --install calico-fuel-plugin-2.0-2.0.0-0.noarch.rpm
+		fuel plugins --install fuel-plugin-calico-VERSION.noarch.rpm
 
 - Check the plugin was installed:
 
@@ -81,27 +81,84 @@ OpenStack cluster in the usual way, with the following guidelines:
 
 - Create a new OpenStack environment, selecting:
 
-	Kilo on Ubuntu Trusty
+        Mitaka on Ubuntu 14.04
+        "Calico networking" as the networking setup
 
-	"Neutron with VLAN segmentation" as the networking setup
-
-- Under the settings tab, make sure the following options are checked:
-
-	"Assign public network to all nodes"
-
-	"Use Calico Virtual Networking"
-
-- Under the network tab, configure the 'Public' settings (leaving all of the 
-  other sections with their default values). For example (exact values will
+- Under the network tab, configure the `Public` settings for reduce
+  Floating-IP addresses pool to one address, 
+  because Calico does not use Floating IPs use-case. 
+  For example (exact values will
   depend on your setup):
 
-	- IP Range: 172.18.203.60 - 172.18.203.69
-        - CIDR: 172.18.203.0/24
-        - Use VLAN tagging: No
-        - Gateway: 172.18.203.1 
-	- Floating IP range: 172.18.203.70 - 172.18.203.79
+        Node Network Group
+          default:
+            CIDR: 172.18.203.0/24
+            IP Range: 172.18.203.2 - 172.18.203.253
+            Gateway: 172.18.203.1
+            Use VLAN tagging: No
+
+        Settings
+          Neutron L3:
+            Floating IP range: 172.18.203.254 - 172.18.203.254
+
+- Under the network tab, configure the `Private` network settings 
+  (this network will be used for BGP peering between custer nodes, route 
+  reflectors and external peers, configured by UI). Do not forget to exclude
+  Your BGP peers and gateway from the IP range!
+  For example (exact values will depend on your setup):
+
+        IP Range: 172.100.203.33 - 172.100.203.254
+        CIDR: 172.100.203.0/24
+        Use VLAN tagging: No
+
+- Under Fuel CLI, configure gateway for `Private` network.
+  This gateway will be used for pass outgoing external traffic from instances.
+  In most cases the same gateway node should be also an external BGB peer 
+  (see below, external BGB peer-1).
+
+        [root@nailgun ~]# fuel2 network-group list
+        +----+---------+------------+---------------+---------+----------+
+        | id | name    | vlan_start | cidr          | gateway | group_id |
+        +----+---------+------------+---------------+---------+----------+
+        |  5 | private | None       | 10.88.12.0/24 | None    | 1        |
+        +----+---------+------------+---------------+---------+----------+
+        [root@nailgun ~]# fuel2 network-group update -g 10.88.12.1  5
+        +------------+---------------+
+        | Field      | Value         |
+        +------------+---------------+
+        | id         | 5             |
+        | name       | private       |
+        | vlan_start | None          |
+        | cidr       | 10.88.12.0/24 |
+        | gateway    | 10.88.12.1    |
+        | group_id   | 1             |
+        +------------+---------------+
+
+- Under the network tab, configure IP pool for Calico network fabric. 
+  Ip addresses from this pool will be assigned to VM instances:
+
+        Settings
+          Neutron L3:
+            Admin Tenant network CIDR: 10.10.0.0/16
+            Admin Tenant network gateway: 10.10.0.1
+
+- Under the network tab, in the `other/Calico_networking` section setup
+  AS number, external BGP peering and another Calico networking options.
+
+        AS Number: 64513
+
+        [X] Allow external BGP peering
+            External BGP peers:
+              peer-1:65000:10.88.12.1
+              peer-2:65002:172.100.203.13
 
 - Add nodes (for meaningful testing, you will need at least two compute nodes
-  in addition to the controller).
+  in addition to the controller). Calico-RR (route-reflector) and Calico-ETCD node roles may be co-located on Controller nodes or deployed separately.
+
+- Under the nodes tab, configure networks to NICs mapping 
+  (exact positions will depend on your setup)
 
 - Deploy changes
+
+- Do not forget to configure BGP peering session on you infrastructure 
+  BGP peers.
