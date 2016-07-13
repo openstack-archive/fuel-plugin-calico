@@ -1,4 +1,4 @@
-Copyright 2015 Metaswitch Networks
+Copyright 2016 Mirantis
 
 Fuel Plugin for Project Calico
 ==============================
@@ -6,7 +6,7 @@ Fuel Plugin for Project Calico
 The Calico plugin provides the ability to use Calico as a networking backend
 for Mirantis OpenStack.
 
-Compatible with Fuel version 7.0.
+Compatible with Fuel version 9.0.
 
 Problem description
 ===================
@@ -22,8 +22,9 @@ and destination workloads.
 Proposed change
 ===============
 
-Update the Calico plugin for Fuel version 6.1 to support version 7.0. This will 
-involve moving from the Juno to the Kilo release of Mirantis OpenStack.
+Re-design the Calico plugin for Fuel version 6.1 to support version 9.0.
+This will  involve moving from the Juno to the Kilo release of
+Mirantis OpenStack.
 
 Support for HA deployments with multiple controllers will also be added.
 
@@ -45,7 +46,7 @@ None.
 Upgrade impact
 --------------
 
-When upgrading the Fuel Master node to Fuel Version higher than 7.0, plugin 
+When upgrading the Fuel Master node to Fuel Version higher than 9.0, plugin
 compatibility should be checked, and a new plugin installed if necessary.
 
 Security impact
@@ -62,7 +63,7 @@ Other end user impact
 ---------------------
 
 Once the plugin is installed, the user can enable Calico networking on the
-Settings tab of the Fuel Web UI, and customize the network settings.
+Wizard while create Openstack Env, and customize the network settings.
 
 Performance Impact
 ------------------
@@ -96,15 +97,16 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  Emma Gordon <emma@projectcalico.org> (developer)
+  Sergey Vasilenko <svasilenko@mirantis.com>
 
 Other contributors:
-  Neil Jerram <neil@projectcalico.org> (developer, reviewer)
+  Alexander Didenko <adidenko@mirantis.com>
+  Oleksandr Martsyniuk <omartsyniuk@mirantis.com>
 
 Work Items
 ----------
 
-* Integrate Calico with Fuel 7.0.
+* Integrate Calico with Fuel 9.0.
 
 * Update the Calico plugin.
 
@@ -115,7 +117,7 @@ Work Items
 Dependencies
 ============
 
-* Fuel 7.0.
+* Fuel 9.0.
 
 Testing
 =======
@@ -142,7 +144,7 @@ References
 
 * Calico Documentation - http://docs.projectcalico.org/en/latest/index.html
 
-* Subscribe to the Calico Technical Mailing List - 
+* Subscribe to the Calico Technical Mailing List -
   http://lists.projectcalico.org/listinfo/calico-tech
 
 * Calico IRC - freenode IRC: #calico
