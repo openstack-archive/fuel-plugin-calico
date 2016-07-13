@@ -1,18 +1,20 @@
 #!/bin/bash
-
-# Add here any the actions which are required before plugin build
-# like packages building, packages downloading from mirrors and so on.
-# The script should return 0 if there were no errors.
-
-#!/bin/bash
-set -eux
-ROOT="$(dirname `readlink -f $0`)"
-MODULES="${ROOT}"/deployment_scripts/puppet/modules
-mkdir -p "${MODULES}"
-REPO_PATH='https://github.com/openstack/fuel-library/tarball/f43d885914d74fbd062096763222f350f47480e1'
-RPM_REPO="${ROOT}"/repositories/centos/
-DEB_REPO="${ROOT}"/repositories/ubuntu/
-
-wget -qO- "${REPO_PATH}" | \
-    tar -C "${MODULES}" --strip-components=3 -zxvf - \
-    openstack-fuel-library-f43d885/deployment/puppet/{inifile,stdlib}
+# set -eux
+# ROOT="$(dirname `readlink -f $0`)"
+# OLD_PWD=`pwd`
+# MODULES="${ROOT}"/deployment_scripts/puppet/modules
+# cd $MODULES
+# # Download upstream puppet-calico
+# COMMIT="421530d"
+# OWNER="beddari"
+# REPO="puppet-calico"
+# curl -L "https://github.com/${OWNER}/${REPO}/tarball/${COMMIT}" | tar xzf -
+# mv "${OWNER}-${REPO}-${COMMIT}" calico
+# # Download upstream bird module
+# COMMIT="869cf08"
+# OWNER="norcams"
+# REPO="puppet-bird"
+# curl -L "https://github.com/${OWNER}/${REPO}/tarball/${COMMIT}" | tar xzf -
+# mv "${OWNER}-${REPO}-${COMMIT}" bird
+# ###
+# cd $OLD_PWD

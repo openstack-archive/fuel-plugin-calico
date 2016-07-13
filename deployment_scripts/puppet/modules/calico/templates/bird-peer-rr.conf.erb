@@ -1,0 +1,11 @@
+protocol bgp '<%= @name %>' {
+  local as <%= @local_as_number %>;
+  neighbor <%= @remote_ipaddr %> as <%= @remote_as_number %>;
+  description "Route Reflector <%= @name %>";
+  multihop;
+  import all;
+  export filter calico_openstack__export_bgp;
+  next hop self;    # Disable next hop processing and always advertise our
+                    # local address as nexthop
+  source address <%= @local_ipaddr %>;
+}
