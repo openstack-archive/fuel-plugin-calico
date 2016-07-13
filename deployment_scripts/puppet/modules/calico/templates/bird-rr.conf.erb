@@ -1,0 +1,26 @@
+# Configure logging
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+#log "tmp" all;
+# Override router ID
+router id <%= @src_addr %>;
+
+include "/etc/bird/calico_os_filters.conf";
+
+# Turn on global debugging of all protocols
+debug protocols all;
+# This pseudo-protocol watches all interface up/down events.
+protocol device {
+  scan time 2;    # Scan interfaces every 2 seconds
+}
+
+# Include custom config
+include "/etc/bird/custom.conf";
+
+<%- @rr_clients.each do |name, ipaddr| -%>
+include "/etc/bird/peers/compute__<%= name %>.conf";
+<%- end -%>
+
+<%- @ext_peers.each do |name, peer| -%>
+include "/etc/bird/peers/ext__<%= name %>.conf";
+<%- end -%>
