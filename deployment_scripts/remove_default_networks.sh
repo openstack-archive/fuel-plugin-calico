@@ -10,8 +10,8 @@ source /root/openrc
 
 # Details of the default networks/routers created on Fuel deployment of a
 # Mirantis OpenStack environment.
-DEFAULT_NET=net04
-DEFAULT_NET_EXT=net04_ext
+DEFAULT_NET=admin_internal_net
+DEFAULT_NET_EXT=admin_floating_net
 DEFAULT_ROUTER=router04
 
 # DEFAULT_NET_EXT is set as the gateway for DEFAULT_ROUTER, we must clear that
