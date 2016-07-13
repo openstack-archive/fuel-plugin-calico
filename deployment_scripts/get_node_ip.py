@@ -12,12 +12,11 @@ def main(hostname):
 
     with open(config_file, "r") as f:
         config = yaml.safe_load(f)
-
-    for node in config["nodes"]:
-        if node["fqdn"] == hostname:
+    for node in config["network_metadata"]["nodes"]:
+        if config["network_metadata"]["nodes"][node]["fqdn"] == hostname:
             # Get the IP address that other OpenStack nodes can use to address
             # services on this node, rather than the node's public IP address.
-            this_node_ip = node["internal_address"]
+            this_node_ip = config["network_metadata"]["nodes"][node]["network_roles"]["mgmt/vip"]
             break
     else:
         this_node_ip = None
