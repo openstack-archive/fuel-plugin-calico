@@ -1,1 +1,58 @@
-attributes: {}
+attributes:
+  metadata:
+    label: Calico networking
+    description: Deploy Openstack with Calico L3 fabric instead Neutron L2 isolation
+    weight: 28400
+    group: network
+  as_number:
+    value: '64512'
+    label: AS Number
+    description: AS number for BGP communication
+    weight: 20
+    type: "text"
+    regex:
+      source: '^([1-9]|[0-9]{2,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-4])$'
+      error: "Invalid AS number"
+  # ibgp_mode:
+  #   type: radio
+  #   weight: 28404
+  #   label: Choose iBGP mode
+  #   description: ""
+  #   value: rr
+  #   values:
+  #     - data:  rr
+  #       label: Route Reflectors
+  #     - data:  mesh
+  #       label: Full Mesh
+  enable_ipv4:
+    type: checkbox
+    weight: 60
+    value: true
+    label: Enable IPv4
+    description: Operate with bird4 BGP daemon
+  enable_ipv6:
+    type: checkbox
+    weight: 62
+    value: false
+    label: Enable IPv6
+    description: Operate with bird6 BGP daemon
+    restrictions:
+      - condition: "settings:fuel-plugin-calico.metadata.enabled == true"  # disable, because in TODO
+        strict: false
+  enable_external_peering:
+    type: checkbox
+    weight: 70
+    value: false
+    label: Allow external BGP peering
+  external_peers:
+    label: External BGP peers
+    description: One BGP peer per line in format 'name:as_number:ipaddr:optional_flags...'
+    weight: 71
+    type: "textarea"
+    value: ''
+    restrictions:
+      - condition: "settings:fuel-plugin-calico.enable_external_peering.value != true"
+        strict: false
+    # regex:
+    #   source: '^([1-9]|[0-9]{2,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-4])$'
+    #   error: "Invalid AS number"
