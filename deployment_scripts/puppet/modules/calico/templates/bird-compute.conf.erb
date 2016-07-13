@@ -1,0 +1,29 @@
+router id <%= @src_addr %>;
+listen bgp address <%= @src_addr %>;
+
+include "/etc/bird/calico_os_filters.conf";
+
+# Configure synchronization between BIRD's routing tables and the
+# kernel.
+protocol kernel {
+  learn;          # Learn all alien routes from the kernel
+  persist;        # Don't remove routes on bird shutdown
+  scan time 2;    # Scan kernel routing table every 2 seconds
+  import all;
+  graceful restart;
+  export all;     # Default is export none
+}
+
+# Watch interface up/down events.
+protocol device {
+  scan time 2;    # Scan interfaces every 2 seconds
+}
+
+protocol direct {
+   debug all;
+   interface "br-mesh";
+}
+
+<%- @rr_servers.each do |name, ipaddr| -%>
+include "/etc/bird/peers/rr__<%= name %>.conf";
+<%- end -%>

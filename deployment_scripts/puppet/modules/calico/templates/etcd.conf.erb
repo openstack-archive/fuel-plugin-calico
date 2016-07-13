@@ -1,0 +1,15 @@
+# vim:set ft=upstart ts=2 et:
+description "etcd"
+author "etcd maintainers"
+
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+
+respawn
+
+setuid etcd
+
+env ETCD_DATA_DIR=/var/lib/etcd
+export ETCD_DATA_DIR
+
+exec /usr/bin/etcd <%=@etcd_cmd_opts %>
