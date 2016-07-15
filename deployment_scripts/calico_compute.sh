@@ -79,7 +79,7 @@ service etcd start
 
 # Run apt-get upgrade and apt-get dist-upgrade. These commands will
 # bring in Calico-specific updates to the OpenStack packages and to
-# dnsmasq. 
+# dnsmasq.
 
 apt-get -y --force-yes upgrade
 apt-get -y --force-yes dist-upgrade
@@ -94,8 +94,11 @@ service nova-compute restart
 # Install calico-dhcp-agent
 apt-get -y install calico-dhcp-agent
 
-# Allow BGP connections through the Fuel firewall. We do this before 
-# installing calico-compute, so that they will be included when the 
+# Install neutron-metadata-agent on compute node
+apt-get -y install neutron-metadata-agent
+
+# Allow BGP connections through the Fuel firewall. We do this before
+# installing calico-compute, so that they will be included when the
 # calico-compute install script does iptables-save.
 iptables -I INPUT 1 -p tcp --dport 179 -j ACCEPT
 
@@ -130,7 +133,7 @@ apt-get -y install calico-compute bird
 # a route reflector to avoid the need for a full BGP mesh. To this
 # end, it includes useful configuration scripts that will prepare a
 # BIRD config file with a single peering to the route reflector. If
-# that's correct for your network, you can run the following command 
+# that's correct for your network, you can run the following command
 # for IPv4 connectivity between compute hosts.
 #
 # The calico_route_reflector.sh script will set up the required BGP
