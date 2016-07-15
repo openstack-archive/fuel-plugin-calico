@@ -49,6 +49,19 @@
     cmd: ./calico_compute.sh
     timeout: 600
 
+
+- id: neutron-br-int-workaround
+  role: ['compute']
+  version: 2.0.0
+  requires: [openstack-network-start]
+  required_for: [openstack-network-end, enable_nova_compute_service]
+  type: puppet
+  parameters:
+    timeout: 180
+    puppet_manifest: neutron-br-int-workaround.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+
+
 # Disable tasks that create neutron router and networks
 - id: openstack-network-networks
   type: skipped
@@ -58,6 +71,20 @@
 
 - id: primary-openstack-network-agents-dhcp
   type: skipped
-
 - id: openstack-network-agents-dhcp
+  type: skipped
+
+- id: primary-openstack-network-plugins-l2
+  type: skipped
+- id: openstack-network-plugins-l2
+  type: skipped
+
+- id: primary-openstack-network-agents-l3
+  type: skipped
+- id: openstack-network-agents-l3
+  type: skipped
+
+- id: primary-openstack-network-agents-metadata
+  type: skipped
+- id: openstack-network-agents-metadata
   type: skipped
