@@ -50,7 +50,7 @@ class calico::bird (
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    content => template("calico/bird-calico_os-filters.conf.erb"),
+    content => template('calico/bird-calico_os-filters.conf.erb'),
   } ->
   file { '/etc/bird/bird.conf':
     ensure  => present,
