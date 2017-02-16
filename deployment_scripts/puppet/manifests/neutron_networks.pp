@@ -4,7 +4,7 @@ notice('MODULAR: calico/neutron_networks.pp')
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 
 $access_hash = hiera_hash('access', {})
 $tenant_name = try_get_value($access_hash, 'tenant', 'admin')
@@ -29,11 +29,11 @@ neutron_network { $net :
   tenant_name           => $tenant_name,
 } ->
 neutron_subnet { $subnet :
-  ensure           => 'present',
-  cidr             => $subnet_cidr,
-  network_name     => $net,
-  gateway_ip       => $subnet_gw,
-  enable_dhcp      => true,
-  ip_version       => '4',
-  tenant_name      => $tenant_name,
+  ensure       => 'present',
+  cidr         => $subnet_cidr,
+  network_name => $net,
+  gateway_ip   => $subnet_gw,
+  enable_dhcp  => true,
+  ip_version   => '4',
+  tenant_name  => $tenant_name,
 }
