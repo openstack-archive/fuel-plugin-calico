@@ -3,11 +3,11 @@ notice('MODULAR: calico/etcd_proxy.pp')
 prepare_network_config(hiera_hash('network_scheme'))
 $network_metadata = hiera_hash('network_metadata', {})
 
-include calico
+include ::calico
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 
 # Firewall initials
 class { '::firewall':}
@@ -22,7 +22,7 @@ firewall { '400 etcd':
   action => 'accept',
 } ->
 # Deploy etcd cluster member
-class { 'calico::etcd':
+class { '::calico::etcd':
   node_role     => 'proxy',
   bind_host     => $calico::params::mgmt_ip,
   bind_port     => $calico::params::etcd_port,
