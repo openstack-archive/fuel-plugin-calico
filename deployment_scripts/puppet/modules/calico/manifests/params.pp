@@ -38,6 +38,6 @@ class calico::params {
   $etcd_peer_port = '2380'
   $etcd_servers = suffix(prefix($etcd_nodes_ips, 'http://'), ":${etcd_port}")
   $etcd_servers_list = join($etcd_servers, ',')
-  $etcd_servers_named_list = join(suffix(join_keys_to_values($etcd_nodes_map,"=http://"), ":${etcd_peer_port}"), ',')
+  $etcd_servers_named_list = join(suffix(join_keys_to_values($etcd_nodes_map,'=http://'), ":${etcd_peer_port}"), ',')
 }
 # vim: set ts=2 sw=2 et :
