@@ -1,6 +1,6 @@
 notice('MODULAR: calico/compute_felix.pp')
 
-include calico
+include ::calico
 
 # required, because neutron-dhcp-agent one of dependency of calico-compute
 package { 'neutron-dhcp-agent':

@@ -9,7 +9,7 @@ define calico::bird::bgp_peer_record (
 ) {
   include ::calico::params
   $peer_config_path = "/etc/bird/peers/${template}__${name}.conf"
-  file { "${peer_config_path}":
+  file { $peer_config_path:
     ensure  => $ensure,
     require => File['/etc/bird/peers'],
     before  => File['/etc/bird/bird.conf'],
@@ -17,17 +17,17 @@ define calico::bird::bgp_peer_record (
     content => template("calico/bird-peer-${template}.conf.erb"),
   }
   if $include {
-    file_line {"":
-      line      => "include ${peer_config_path};",
-      path      => '/etc/bird/bird.conf',
+    file_line {'':
+      line    => "include ${peer_config_path};",
+      path    => '/etc/bird/bird.conf',
       #after    => undef,
       #ensure   => 'present',
       #match    => undef, # /.*match/
       #multiple => undef, # 'true' or 'false'
       #name     => undef,
       #replace  => true, # 'true' or 'false'
-      require   => File['/etc/bird/bird.conf'],
-      notify    => Service['bird']
+      require => File['/etc/bird/bird.conf'],
+      notify  => Service['bird']
     }
   }
 }
