@@ -4,13 +4,13 @@ $network_scheme = hiera_hash('network_scheme', {})
 prepare_network_config($network_scheme)
 $network_metadata = hiera_hash('network_metadata', {})
 
-include calico
+include ::calico
 include ::nova::params
 
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 
 $neutron_config          = hiera_hash('neutron_config')
 $management_vip          = hiera('management_vip')

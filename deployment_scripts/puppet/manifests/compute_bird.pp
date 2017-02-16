@@ -6,7 +6,7 @@ $network_metadata = hiera_hash('network_metadata', {})
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 $enable_ipv4 = try_get_value($plugin_settings, 'enable_ipv4', true)
 $enable_ipv6 = try_get_value($plugin_settings, 'enable_ipv6', false)
 $as_number   = try_get_value($plugin_settings, 'as_number', 65001)
@@ -26,7 +26,7 @@ firewall { '410 bird':
   proto  => 'tcp',
   action => 'accept',
 } ->
-class { 'calico::bird':
+class { '::calico::bird':
   template    => 'compute',
   as_number   => $as_number,
   enable_ipv4 => $enable_ipv4,
