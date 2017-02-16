@@ -85,8 +85,8 @@ OpenStack cluster in the usual way, with the following guidelines:
         "Calico networking" as the networking setup
 
 - Under the network tab, configure the `Public` settings to reduce
-  Floating-IP addresses pool to one address, 
-  because Calico does not support Floating IPs use-case. 
+  Floating-IP addresses pool to one address,
+  because Calico does not support Floating IPs use-case.
   For example (exact values will
   depend on your setup):
 
@@ -101,8 +101,8 @@ OpenStack cluster in the usual way, with the following guidelines:
           Neutron L3:
             Floating IP range: 172.18.203.254 - 172.18.203.254
 
-- Under the network tab, configure the `Private` network settings 
-  (this network will be used for BGP peering between custer nodes, route 
+- Under the network tab, configure the `Private` network settings
+  (this network will be used for BGP peering between custer nodes, route
   reflectors and external peers, configured by UI). Do not forget to exclude
   Your BGP peers and gateway from the IP range!
   For example (exact values will depend on your setup):
@@ -113,28 +113,28 @@ OpenStack cluster in the usual way, with the following guidelines:
 
 - Under Fuel CLI, configure gateway for `Private` network.
   This gateway will be used for pass outgoing external traffic from instances.
-  In most cases the same gateway node should be also an external BGB peer 
+  In most cases the same gateway node should be also an external BGB peer
   (see below, external BGB peer-1).
 
         [root@nailgun ~]# fuel2 network-group list
-        +----+---------+------------+---------------+---------+----------+
-        | id | name    | vlan_start | cidr          | gateway | group_id |
-        +----+---------+------------+---------------+---------+----------+
-        |  5 | private | None       | 10.88.12.0/24 | None    | 1        |
-        +----+---------+------------+---------------+---------+----------+
-        [root@nailgun ~]# fuel2 network-group update -g 10.88.12.1  5
-        +------------+---------------+
-        | Field      | Value         |
-        +------------+---------------+
-        | id         | 5             |
-        | name       | private       |
-        | vlan_start | None          |
-        | cidr       | 10.88.12.0/24 |
-        | gateway    | 10.88.12.1    |
-        | group_id   | 1             |
-        +------------+---------------+
+        +----+---------+------------+------------------+---------+----------+
+        | id | name    | vlan_start | cidr             | gateway | group_id |
+        +----+---------+------------+------------------+---------+----------+
+        |  5 | private | None       | 172.100.203.0/24 | None    | 1        |
+        +----+---------+------------+------------------+---------+----------+
+        [root@nailgun ~]# fuel2 network-group update -g 172.100.203.1  5
+        +------------+------------------+
+        | Field      | Value            |
+        +------------+------------------+
+        | id         | 5                |
+        | name       | private          |
+        | vlan_start | None             |
+        | cidr       | 172.100.203.0/24 |
+        | gateway    | 172.100.203.1    |
+        | group_id   | 1                |
+        +------------+------------------+
 
-- Under the network tab, configure IP pool for Calico network fabric. 
+- Under the network tab, configure IP pool for Calico network fabric.
   Ip addresses from this pool will be assigned to VM instances:
 
         Settings
@@ -149,17 +149,17 @@ OpenStack cluster in the usual way, with the following guidelines:
 
         [X] Allow external BGP peering
             External BGP peers:
-              peer-1:65000:10.88.12.1
+              peer-1:65000:172.100.203.1
               peer-2:65002:172.100.203.13
 
 - Add nodes (for meaningful testing, you will need at least two compute nodes
-  in addition to the controller). Calico-RR (route-reflector) and Calico-ETCD 
+  in addition to the controller). Calico-RR (route-reflector) and Calico-ETCD
   node roles may be co-located on Controller nodes or deployed separately.
 
-- Under the nodes tab, configure networks to NICs mapping 
+- Under the nodes tab, configure networks to NICs mapping
   (exact positions will depend on your setup)
 
 - Deploy changes
 
-- Do not forget to configure BGP peering session on you infrastructure 
+- Do not forget to configure BGP peering session on you infrastructure
   BGP peers.
