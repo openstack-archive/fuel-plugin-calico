@@ -5,12 +5,12 @@ notice('MODULAR: calico/compute_metadata_api.pp')
 # $network_metadata = hiera_hash('network_metadata', {})
 
 package { 'nova-api-metadata':
-  name   => 'nova-api-metadata',
   ensure => 'installed',
+  name   => 'nova-api-metadata',
 } ->
 service { 'nova-api-metadata':
+  ensure => running,
   enable => true,
-  ensure => running
 }
 
 # Package['nova-api-metadata'] -> Nova_config<||>

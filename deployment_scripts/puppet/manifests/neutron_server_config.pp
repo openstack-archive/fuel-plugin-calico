@@ -8,11 +8,11 @@ $network_scheme = hiera_hash('network_scheme', {})
 prepare_network_config($network_scheme)
 $network_metadata = hiera_hash('network_metadata', {})
 
-include calico
+include ::calico
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 
 # override neutron options
 $override_configuration = hiera_hash('configuration', {})
@@ -112,20 +112,20 @@ Package['calico-control'] -> Class['::neutron::server']
 Package['calico-control'] -> Class['::neutron::plugins::ml2']
 
 class { '::neutron::plugins::ml2':
-  type_drivers              => ['local', 'flat'],
-  tenant_network_types      => 'local',
-  mechanism_drivers         => ['calico'],
-  flat_networks             => ['*'],
+  type_drivers          => ['local', 'flat'],
+  tenant_network_types  => 'local',
+  mechanism_drivers     => ['calico'],
+  flat_networks         => ['*'],
   #network_vlan_ranges       => $network_vlan_ranges,
   #tunnel_id_ranges          => [],
   #vxlan_group               => $vxlan_group,
   #vni_ranges                => $tunnel_id_ranges,
-  path_mtu                  => $physical_net_mtu,
-  extension_drivers         => $extension_drivers,
+  path_mtu              => $physical_net_mtu,
+  extension_drivers     => $extension_drivers,
   #supported_pci_vendor_devs => $pci_vendor_devs,
-  sriov_agent_required      => false,
-  enable_security_group     => true,
-  firewall_driver           => 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver',
+  sriov_agent_required  => false,
+  enable_security_group => true,
+  firewall_driver       => 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver',
 }
 
 class { '::neutron::server':
@@ -159,9 +159,9 @@ class { '::neutron::server':
 }
 
 Package['neutron'] ~>
-augeas { "dhcp_agents_per_network":
+augeas { 'dhcp_agents_per_network':
   #context => "/files/etc/neutron/neutron.conf",
-  incl    => "/etc/neutron/neutron.conf",
+  incl    => '/etc/neutron/neutron.conf',
   lens    => 'Puppet.lns',
   changes => [
     "set DEFAULT/dhcp_agents_per_network ${calico::params::compute_nodes_count}",
@@ -169,11 +169,13 @@ augeas { "dhcp_agents_per_network":
 } ~> Service['neutron-server']
 
 include ::neutron::params
+$neutron_server_package = $neutron::params::server_package ? {
+  false   => $neutron::params::package_name,
+  default => $neutron::params::server_package,
+}
+
 tweaks::ubuntu_service_override { $::neutron::params::server_service:
-  package_name => $neutron::params::server_package ? {
-    false   => $neutron::params::package_name,
-    default => $neutron::params::server_package
-  }
+  package_name => $neutron_server_package,
 }
 
 class { '::neutron::server::notifications':
@@ -187,6 +189,6 @@ class { '::neutron::server::notifications':
 
 # Stub for Nuetron package
 package { 'neutron':
-  name   => 'binutils',
   ensure => 'installed',
+  name   => 'binutils',
 }
