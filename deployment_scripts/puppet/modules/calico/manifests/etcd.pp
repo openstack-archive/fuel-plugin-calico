@@ -54,9 +54,9 @@ case $node_role {
 
   file { '/var/log/etcd.log':
     ensure => present,
-    mode    => '0644',
-    owner => 'etcd',
-    group => 'etcd',
+    mode   => '0644',
+    owner  => 'etcd',
+    group  => 'etcd',
   } ->
 
   file { '/etc/init/etcd.conf':

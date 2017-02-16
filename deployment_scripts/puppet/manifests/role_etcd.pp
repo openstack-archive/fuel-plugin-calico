@@ -3,11 +3,11 @@ notice('MODULAR: calico/etcd.pp')
 prepare_network_config(hiera_hash('network_scheme'))
 $network_metadata = hiera_hash('network_metadata', {})
 
-include calico
+include ::calico
 
 # Initial constants
 $plugin_name     = 'fuel-plugin-calico'
-$plugin_settings = hiera_hash("${plugin_name}", {})
+$plugin_settings = hiera_hash($plugin_name, {})
 $cluster_info    = hiera_hash('cluster', {})
 $cluster_token   = try_get_value($cluster_info, 'name', 'openstack-calico-cluster')
 
@@ -25,7 +25,7 @@ firewall { '400 etcd':
   action => 'accept',
 } ->
 # Deploy etcd cluster member
-class { 'calico::etcd':
+class { '::calico::etcd':
   node_role     => 'server',
   bind_host     => $calico::params::mgmt_ip,
   bind_port     => $calico::params::etcd_port,

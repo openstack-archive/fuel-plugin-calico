@@ -28,12 +28,12 @@ firewallchain { 'calico-alt-gw-MARK:mangle:IPv4':
 }->
 # iptables -t mangle -A PREROUTING -i tap+ -j calico-alt-gw-MARK
 firewall { '010 process traffic from VM instances to outside':
-  ensure   => present,
-  table    => 'mangle',
-  chain    => 'PREROUTING',
-  iniface  => 'tap+',
-  proto    => 'all',
-  jump     => 'calico-alt-gw-MARK',
+  ensure  => present,
+  table   => 'mangle',
+  chain   => 'PREROUTING',
+  iniface => 'tap+',
+  proto   => 'all',
+  jump    => 'calico-alt-gw-MARK',
 } ->
 #iptables -t mangle -A calico-alt-gw-MARK -d 192.168.111.0/24 -j RETURN
 firewall { '011 skip internal traffic':
@@ -46,12 +46,12 @@ firewall { '011 skip internal traffic':
 } ->
 #iptables -t mangle -A calico-alt-gw-MARK -j MARK --set-mark 0x222
 firewall { '012 mark traffic from VM instances to outside':
-  ensure      => present,
-  table       => 'mangle',
-  chain       => 'calico-alt-gw-MARK',
-  jump        => 'MARK',
-  proto       => 'all',
-  set_mark    => $calico_mark
+  ensure   => present,
+  table    => 'mangle',
+  chain    => 'calico-alt-gw-MARK',
+  jump     => 'MARK',
+  proto    => 'all',
+  set_mark => $calico_mark
 }
 
 file { '/etc/init/calico-alt-gateway.conf':
@@ -71,8 +71,8 @@ service {'calico-alt-gateway':
 # read the https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
 # Value '2' may be better, but Calico Felix agent is not compotible with '2'
 sysctl::value {
-  'net.ipv4.conf.all.rp_filter':                      value => "0";
-  "net.ipv4.conf.${calico_alt_gateway_br}.rp_filter": value => "0";
+  'net.ipv4.conf.all.rp_filter':                      value => '0';
+  "net.ipv4.conf.${calico_alt_gateway_br}.rp_filter": value => '0';
 }
 
 # vim: set ts=2 sw=2 et :
