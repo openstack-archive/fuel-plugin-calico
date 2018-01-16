@@ -185,7 +185,7 @@ class { '::neutron::server::notifications':
   region_name  => $region_name,
 }
 
-# Stub for Nuetron package
+# Stub for Neutron package
 package { 'neutron':
   name   => 'binutils',
   ensure => 'installed',
